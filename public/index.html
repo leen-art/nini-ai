@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nini 💗</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #fff5f9;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image:
+      radial-gradient(circle at 20% 20%, #fce7f3 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, #fdf4ff 0%, transparent 50%);
+  }
+
+  .app {
+    width: 420px;
+    height: 780px;
+    background: white;
+    border-radius: 40px;
+    box-shadow: 0 40px 80px rgba(244,114,182,0.18), 0 8px 24px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Avatar section */
+  .avatar-section {
+    background: linear-gradient(135deg, #fce7f3 0%, #fdf4ff 100%);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1.5px solid #fce7f3;
+  }
+
+  .avatar-frame {
+    position: relative;
+    width: 110px;
+    height: 110px;
+  }
+
+  /* D-ID video sits here when talking */
+  #didVideo {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    border: 3px solid #f472b6;
+    box-shadow: 0 0 0 5px #fce7f3;
+    display: none;
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  #niniImg {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    border: 3px solid #f472b6;
+    box-shadow: 0 0 0 5px #fce7f3;
+    position: absolute;
+    top: 0; left: 0;
+    transition: opacity 0.3s;
+  }
+
+  /* Talking glow ring */
+  .talking-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #f472b6, #c084fc, #f472b6) border-box;
+    opacity: 0;
+    transition: opacity 0.3s;
+    animation: spinRing 2s linear infinite;
+  }
+
+  @keyframes spinRing {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .avatar-frame.talking .talking-ring { opacity: 1; }
+  .avatar-frame.talking #niniImg { box-shadow: 0 0 0 5px #fce7f3, 0 0 20px rgba(244,114,182,0.5); }
+
+  .online-dot {
+    position: absolute;
+    bottom: 6px; right: 6px;
+    width: 14px; height: 14px;
+    background: #4ade80;
+    border-radius: 50%;
+    border: 2px solid white;
+    z-index: 2;
+  }
+
+  .avatar-name {
+    font-family: 'Pacifico', cursive;
+    font-size: 24px;
+    color: #be185d;
+  }
+
+  .avatar-status {
+    font-size: 12px;
+    color: #9d174d;
+    font-weight: 700;
+    opacity: 0.7;
+  }
+
+  /* Messages */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 0; }
+
+  .msg-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .msg-row.user { flex-direction: row-reverse; }
+
+  .bubble {
+    max-width: 75%;
+    padding: 11px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  .msg-row.nini .bubble {
+    background: white;
+    border: 1.5px solid #fce7f3;
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 2px 12px rgba(244,114,182,0.1);
+    color: #3b1a2e;
+  }
+
+  .msg-row.user .bubble {
+    background: linear-gradient(135deg, #f472b6, #ec4899);
+    color: white;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 4px 14px rgba(244,114,182,0.35);
+  }
+
+  .typing-bubble {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 16px;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    background: #f9a8d4;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+  }
+
+  /* Quick replies */
+  .quick-replies {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 16px 10px;
+  }
+
+  .quick-btn {
+    background: white;
+    border: 1.5px solid #f9a8d4;
+    color: #be185d;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .quick-btn:hover { background: #fce7f3; transform: translateY(-1px); }
+
+  /* Input */
+  .input-area {
+    padding: 12px 16px 20px;
+    border-top: 1.5px solid #fce7f3;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .input-wrap {
+    flex: 1;
+    background: #fff5f9;
+    border: 1.5px solid #fce7f3;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    transition: border-color 0.2s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: #f472b6;
+    box-shadow: 0 0 0 3px rgba(244,114,182,0.12);
+  }
+
+  input[type="text"] {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d1b1b;
+    padding: 12px 0;
+    outline: none;
+  }
+
+  input::placeholder { color: #f9a8d4; font-weight: 600; }
+
+  .send-btn {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f472b6, #ec4899);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(244,114,182,0.4);
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover { transform: scale(1.08); }
+  .send-btn:active { transform: scale(0.95); }
+  .send-btn svg { width: 20px; height: 20px; fill: white; }
+
+  /* D-ID setup banner */
+  .setup-banner {
+    background: linear-gradient(135deg, #fce7f3, #fdf4ff);
+    border: 1.5px dashed #f9a8d4;
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin: 0 16px 10px;
+    font-size: 11px;
+    color: #9d174d;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 480px) {
+    .app { width: 100vw; height: 100vh; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Avatar section -->
+  <div class="avatar-section">
+    <div class="avatar-frame" id="avatarFrame">
+      <div class="talking-ring"></div>
+      <img id="niniImg" src="nini.png" alt="Nini"/>
+      <video id="didVideo" autoplay playsinline></video>
+      <div class="online-dot"></div>
+    </div>
+    <div class="avatar-name">nini</div>
+    <div class="avatar-status">ur bestie is online 💗</div>
+  </div>
+
+  <!-- D-ID setup note (remove once set up) -->
+  <div class="setup-banner" id="didBanner">
+    ✨ to enable nini's talking animation — add your D-ID key in script below
+  </div>
+
+  <!-- Messages -->
+  <div class="messages" id="messages">
+    <div class="msg-row nini">
+      <div class="bubble">omg heyy!! how are u doing?? 💗</div>
+    </div>
+  </div>
+
+  <!-- Quick replies -->
+  <div class="quick-replies" id="quickReplies">
+    <button class="quick-btn" onclick="sendQuick('i need advice on some drama 👀')">drama help 👀</button>
+    <button class="quick-btn" onclick="sendQuick('i just wanna vent rn')">just venting 😮‍💨</button>
+    <button class="quick-btn" onclick="sendQuick('heyy nini!!')">say hey 👋</button>
+  </div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <div class="input-wrap">
+      <input type="text" id="userInput" placeholder="talk to nini…" maxlength="500"
+        onkeydown="if(event.key==='Enter') sendMessage()"/>
+    </div>
+    <button class="send-btn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ============================================
+// PASTE YOUR D-ID API KEY HERE WHEN YOU GET IT
+// Get it free at: https://www.d-id.com
+// ============================================
+const DID_API_KEY = ""; // e.g. "Basic abc123..."
+const NINI_IMAGE_URL = ""; // paste the public URL of nini.png after uploading to Replit
+
+// ============================================
+
+let chatMessages = [];
+let isTyping = false;
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
+
+  input.value = '';
+  document.getElementById('quickReplies').style.display = 'none';
+
+  appendMessage('user', text);
+  chatMessages.push({ role: 'user', content: text });
+
+  showTyping();
+
+  try {
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatMessages })
+    });
+
+    const data = await res.json();
+    const reply = data.reply;
+
+    hideTyping();
+    appendMessage('nini', reply);
+    chatMessages.push({ role: 'assistant', content: reply });
+
+    // Trigger D-ID talking animation if key is set
+    if (DID_API_KEY && NINI_IMAGE_URL) {
+      talkWithDID(reply);
+    } else {
+      // Fallback: glow ring pulse while "talking"
+      simulateTalking(reply.length * 40);
+    }
+
+  } catch (e) {
+    hideTyping();
+    appendMessage('nini', "omg something glitched bestie 😭");
+  }
+}
+
+function sendQuick(text) {
+  document.getElementById('userInput').value = text;
+  sendMessage();
+}
+
+function appendMessage(role, text) {
+  const container = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  container.appendChild(row);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTyping() {
+  isTyping = true;
+  const container = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row nini';
+  row.id = 'typingRow';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble typing-bubble';
+  bubble.innerHTML = `<div class="dot"></div><div class="dot"></div><div class="dot"></div>`;
+  row.appendChild(bubble);
+  container.appendChild(row);
+  container.scrollTop = container.scrollHeight;
+}
+
+function hideTyping() {
+  isTyping = false;
+  const t = document.getElementById('typingRow');
+  if (t) t.remove();
+}
+
+// Fallback glow animation (no D-ID key needed)
+function simulateTalking(duration) {
+  const frame = document.getElementById('avatarFrame');
+  frame.classList.add('talking');
+  setTimeout(() => frame.classList.remove('talking'), Math.min(duration, 4000));
+}
+
+// D-ID real talking animation
+async function talkWithDID(text) {
+  try {
+    const frame = document.getElementById('avatarFrame');
+    const video = document.getElementById('didVideo');
+    const img = document.getElementById('niniImg');
+
+    // Create a talk clip
+    const res = await fetch('https://api.d-id.com/talks', {
+      method: 'POST',
+      headers: {
+        'Authorization': DID_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        source_url: NINI_IMAGE_URL,
+        script: {
+          type: 'text',
+          input: text,
+          provider: { type: 'microsoft', voice_id: 'en-US-JennyNeural' }
+        },
+        config: { fluent: true, pad_audio: 0 }
+      })
+    });
+
+    const talk = await res.json();
+    const talkId = talk.id;
+
+    // Poll for result
+    let resultUrl = null;
+    for (let i = 0; i < 20; i++) {
+      await new Promise(r => setTimeout(r, 1500));
+      const poll = await fetch(`https://api.d-id.com/talks/${talkId}`, {
+        headers: { 'Authorization': DID_API_KEY }
+      });
+      const pollData = await poll.json();
+      if (pollData.status === 'done') {
+        resultUrl = pollData.result_url;
+        break;
+      }
+    }
+
+    if (resultUrl) {
+      frame.classList.add('talking');
+      img.style.opacity = '0';
+      video.style.display = 'block';
+      video.src = resultUrl;
+      video.play();
+      video.onended = () => {
+        frame.classList.remove('talking');
+        video.style.display = 'none';
+        img.style.opacity = '1';
+      };
+    }
+  } catch (e) {
+    simulateTalking(3000);
+  }
+}
+</script>
+</body>
+</html>
